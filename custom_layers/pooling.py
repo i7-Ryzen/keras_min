@@ -24,6 +24,7 @@ def pool2d(a, kernel_size, stride, padding, pool_mode='max'):
         (a.shape[2] - kernel_size) // stride + 1,
         a.shape[3]
     )
+
     kernel_size = (kernel_size, kernel_size)
     a_w = as_strided(a,
                      shape=output_shape + kernel_size,
@@ -72,4 +73,3 @@ for _ in range(n_simulations):
 print("difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
 print("the average run time of keras: ", avg_time[0], "the average run time  of our implementation: ", avg_time[1])
 print('Ratio speed: (our_implementation/keras)', avg_time[1] / avg_time[0])
-
