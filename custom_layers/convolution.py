@@ -44,10 +44,12 @@ def conv_forward_strides(x, weights, b, s, p):
                      strides=(x.strides[0], s * x.strides[1], s * x.strides[2], x.strides[3]) + x.strides[1:3]
                      )
     print(a_w.shape)
-    a_w = a_w.reshape(n, -1, d*f1*f2)
+    print(weights.shape)
+    a_w = a_w.reshape(-1, d*f1*f2)
     print(a_w.shape)
     print(weights.reshape(-1, k).shape)
-    f = np.dot(a_w, weights.reshape(-1,k ), ) + b
+    weights = np.moveaxis(weights, 2, 0)
+    f = np.dot(a_w, weights.reshape(-1,k), ) + b
     print(f.shape)
     return f.reshape(n, h_, w_, k)
 
@@ -62,13 +64,13 @@ import tensorflow.keras.backend as keras
 import tensorflow.keras.layers as layers
 
 A = np.random.randn(2, 5, 5, 2)
-#A = np.tile(np.arange(1, 10).reshape((1, 3, 3, 1)).T, 2)
+# A = np.tile(np.arange(1, 10).reshape((1, 3, 3, 1)).T, 2)
 print(A.shape)
 avg_time = [0, 0]
 outs = [[], []]
 x = keras.constant(A)
 # pool2d_keras = layers.MaxPooling2D(pool_size=(2, 2), padding="same", input_shape=x.shape[1:])
-conv2d_keras = layers.Conv2D(filters=2, kernel_size=(3, 3), strides=(1, 1), padding="same", activation=None,
+conv2d_keras = layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), padding="same", activation=None,
                              input_shape=x.shape)
 
 y = conv2d_keras(x).numpy()
