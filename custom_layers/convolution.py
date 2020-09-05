@@ -56,7 +56,7 @@ import time
 import tensorflow.keras.backend as keras
 import tensorflow.keras.layers as layers
 
-A = np.random.randn(1, 200, 200, 2)
+A = np.random.randn(1, 200, 200, 32)
 
 avg_time = [0, 0]
 outs = [[], []]

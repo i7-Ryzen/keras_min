@@ -43,4 +43,4 @@ def load_model_from_h5(file):
 
 
 file_path = r"/Users/soufiane/PycharmProjects/keras_min/model.h5"
-print(load_model_from_h5(file_path).keys())
+print(load_model_from_h5(file_path)["conv2d_3"])
