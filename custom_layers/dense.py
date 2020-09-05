@@ -36,46 +36,48 @@ def dense_layer(x, w, b):
   return out
 
 
+if __name__ ==  "__main__":
 
-######################################################################
-# test : predictions & run_time
-######################################################################
+    ######################################################################
+    # test : predictions & run_time
+    ######################################################################
 
-import time
-import tensorflow.keras.backend as keras
-import tensorflow.keras.layers as layers
-
-
-A = np.random.randn(3, 200, 200, 3)
-
-avg_time = [0, 0]
-outs = [[], []]
-x = keras.constant(A)
-dense_keras = layers.Dense(units=1024, activation=None, input_shape=x.shape)
-y = dense_keras(x).numpy()
-W, b = dense_keras.get_weights()
-
-# W = W.transpose(3, 2, 0, 1)
+    import time
+    import tensorflow.keras.backend as keras
+    import tensorflow.keras.layers as layers
 
 
-#res = pool2d(w, kernel_size=2, stride=2, padding=0, pool_mode='max')
+    A = np.random.randn(3, 200, 200, 3)
 
-n_simulations = 4
-for _ in range(n_simulations):
-    # Keras
-    t1 = time.time()
-    o1 = dense_keras(x).numpy()
-    avg_time[0] += time.time() - t1
-    outs[0].append(o1)
+    avg_time = [0, 0]
+    outs = [[], []]
+    x = keras.constant(A)
+    dense_keras = layers.Dense(units=1024, activation=None, input_shape=x.shape)
+    y = dense_keras(x).numpy()
+    W, b = dense_keras.get_weights()
 
-    # our methods
-    t1 = time.time()
-    o2 = dense_layer(A, W, b)
-    avg_time[1] += time.time() - t1
-    outs[1].append(o2)
+    # W = W.transpose(3, 2, 0, 1)
 
-print("difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
-print("the average run time of keras: ", avg_time[0], "the average run time  of our implementation: ", avg_time[1])
-print('Ratio speed: (our_implementation/keras)', avg_time[1]/avg_time[0])
+
+    #res = pool2d(w, kernel_size=2, stride=2, padding=0, pool_mode='max')
+
+    n_simulations = 4
+    for _ in range(n_simulations):
+        # Keras
+        t1 = time.time()
+        o1 = dense_keras(x).numpy()
+        avg_time[0] += time.time() - t1
+        outs[0].append(o1)
+
+        # our methods
+        t1 = time.time()
+        o2 = dense_layer(A, W, b)
+        avg_time[1] += time.time() - t1
+        outs[1].append(o2)
+
+
+    print("difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
+    print("the average run time of keras: ", avg_time[0], "the average run time  of our implementation: ", avg_time[1])
+    print('Ratio speed: (our_implementation/keras)', avg_time[1]/avg_time[0])
 
 
