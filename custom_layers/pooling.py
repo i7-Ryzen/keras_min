@@ -38,39 +38,46 @@ def pool2d(a, kernel_size, stride, padding, pool_mode='max'):
     elif pool_mode == 'avg':
         return a_w.mean(axis=(1, 2)).reshape(output_shape)
 
-if __name__ ==  "__main__":
 
-    ######################################################################
-    # test : predictions & run_time
-    ######################################################################
+
+######################################################################
+# test : predictions & run_time
+######################################################################
+if __name__ == "__main__":
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # to ignore warning errors
     import time
     import tensorflow.keras.backend as keras
     import tensorflow.keras.layers as layers
 
-    A = np.random.randn(2, 200, 200, 32)
+    A = np.random.randn(3, 200, 200, 32)
     avg_time = [0, 0]
     outs = [[], []]
     x = keras.constant(A)
-    # pool2d_keras = layers.MaxPooling2D(pool_size=(2, 2), padding="same", input_shape=x.shape[1:])
     pool2d_keras = layers.MaxPooling2D(pool_size=(2, 2), strides=None, padding="same", input_shape=x.shape)
-    # y = pool2d_keras(x).numpy()
 
-    # res = pool2d(a, kernel_size=2, stride=2, padding=0, pool_mode='max')
-
-    n_simulations = 4
+    n_simulations = 10
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()
         o1 = pool2d_keras(x).numpy()
-        avg_time[0] += time.time() - t1
+        avg_time[0] += (time.time() - t1)/n_simulations
         outs[0].append(o1)
 
         # our methods
         t1 = time.time()
         o2 = pool2d(A, kernel_size=2, stride=2, padding=0, pool_mode='max')
-        avg_time[1] += time.time() - t1
+        avg_time[1] += (time.time() - t1)/n_simulations
         outs[1].append(o2)
 
     print("difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
     print("the average run time of keras: ", avg_time[0], "the average run time  of our implementation: ", avg_time[1])
     print('Ratio speed: (our_implementation/keras)', avg_time[1] / avg_time[0])
+
+
+#################################################
+# result
+#################################################
+# difference of predictions  [2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05, 2.0189942075574525e-05]
+# the average run time of keras:  0.0027794837951660156 the average run time  of our implementation:  0.055673837661743164
+# Ratio speed: (our_implementation/keras) 20.030279636301252

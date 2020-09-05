@@ -35,13 +35,12 @@ def dense_layer(x, w, b):
   out = np.dot(x, w) + b
   return out
 
-
-if __name__ ==  "__main__":
-
-    ######################################################################
-    # test : predictions & run_time
-    ######################################################################
-
+######################################################################
+# test : predictions & run_time
+######################################################################
+if __name__ == "__main__":
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # to ignore warning errors
     import time
     import tensorflow.keras.backend as keras
     import tensorflow.keras.layers as layers
@@ -56,23 +55,18 @@ if __name__ ==  "__main__":
     y = dense_keras(x).numpy()
     W, b = dense_keras.get_weights()
 
-    # W = W.transpose(3, 2, 0, 1)
-
-
-    #res = pool2d(w, kernel_size=2, stride=2, padding=0, pool_mode='max')
-
-    n_simulations = 4
+    n_simulations = 3
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()
         o1 = dense_keras(x).numpy()
-        avg_time[0] += time.time() - t1
+        avg_time[0] += (time.time() - t1)/n_simulations
         outs[0].append(o1)
 
         # our methods
         t1 = time.time()
         o2 = dense_layer(A, W, b)
-        avg_time[1] += time.time() - t1
+        avg_time[1] += (time.time() - t1)/n_simulations
         outs[1].append(o2)
 
 
@@ -81,3 +75,10 @@ if __name__ ==  "__main__":
     print('Ratio speed: (our_implementation/keras)', avg_time[1]/avg_time[0])
 
 
+#################################################
+# result
+#################################################
+
+# difference of predictions  [9.671998131229864e-05, 9.671998131229864e-05, 9.671998131229864e-05]
+# the average run time of keras:  0.42083819707234704 the average run time  of our implementation:  3.2441244920094805
+# Ratio speed: (our_implementation/keras) 7.708721581305932

@@ -42,6 +42,11 @@ def load_model_from_h5(file):
     return dict_configs
 
 if __name__ ==  "__main__":
-    file_path = r"/Users/soufiane/PycharmProjects/keras_min/model.h5"
-    print(load_model_from_h5(file_path))
+    from pathlib import Path
+    file_path = Path(__file__).parent.parent.absolute() / "tests" / "model.h5"
+    print(load_model_from_h5(file_path).keys())
 
+#################################################
+# result
+#################################################
+# dict_keys(['conv2d_3', 'max_pooling2d_3', 'flatten_3', 'dense_12', 'dense_13', 'dense_14', 'dense_15'])
