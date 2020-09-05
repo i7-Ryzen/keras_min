@@ -42,6 +42,6 @@ def load_model_from_h5(file):
     return dict_configs
 
 if __name__ ==  "__main__":
-    file_path = r"/home/soufiane/PycharmProjects/keras_min/model.h5"
+    file_path = r"/Users/soufiane/PycharmProjects/keras_min/model.h5"
     print(load_model_from_h5(file_path))
 
