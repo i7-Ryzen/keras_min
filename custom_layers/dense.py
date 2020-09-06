@@ -54,13 +54,16 @@ if __name__ == "__main__":
     dense_keras = layers.Dense(units=1024, activation=None, input_shape=x.shape)
     y = dense_keras(x).numpy()
     W, b = dense_keras.get_weights()
+    print(W.shape, b.shape)
+
+
 
     n_simulations = 3
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()
         o1 = dense_keras(x).numpy()
-        avg_time[0] += (time.time() - t1)/n_simulations
+        avg_time[0] += (time.time() - t1) / n_simulations
         outs[0].append(o1)
 
         # our methods
