@@ -31,4 +31,10 @@ def define_model():
 
 resnet50_model = define_model()
 resnet50_model.summary()
-resnet50_model.save("resnet50_model.h5")
+#resnet50_model.save("resnet50_model.h5")
+
+# layer_names=[layer.name for layer in resnet50_model.layers]
+# layer_output = resnet50_model.get_layer("conv1_bn")
+# weights_bn = layer_output.get_weights()
+#
+# gamma, beta, mean, std = weights_bn[0], weights_bn[1], weights_bn[2], weights_bn[3]
