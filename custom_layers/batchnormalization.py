@@ -2,9 +2,20 @@ import numpy as np
 
 
 def bachnormalization(x, gamma, bias, mean, std, epsilon):
+    """
+    Input:
+    - x: [n  * h * w * c] -> N image data of size c * H * W
+    - gamma: [(c,)] -> is a learned scaling factor (initialized as 1), which can be disabled by passing
+    - bias: [(c,)]   -> is a learned offset factor (initialized as 0), which can be disabled by passing center=False to the constructor.
+    - mean: [(c,)] moving mean
+    - std: [(c,)] the moving variance
+    - epsilon: is small constant (configurable as part of the constructor arguments)
+    Output:
 
-    normalized = (x - mean.reshape(1,1,1,-1)) / np.sqrt(std.reshape(1,1,1,-1) + epsilon)
-    output = gamma.reshape(1,1,1,-1) * normalized + bias.reshape(1,1,1,-1)
+    - output: [n  * h * w * c] -> the normalized input
+    """
+    normalized = (x - mean.reshape(1, 1, 1, -1)) / np.sqrt(std.reshape(1, 1, 1, -1) + epsilon)
+    output = gamma.reshape(1, 1, 1, -1) * normalized + bias.reshape(1, 1, 1, -1)
     return output
 
 
