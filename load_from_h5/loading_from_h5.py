@@ -14,6 +14,7 @@ def load_model_from_h5(file):
     f = h5py.File(file, mode='r')
     g = f["model_weights"]
     dict_weights = dict()
+
     for p_name in g.keys():
         param = g[p_name]
         for i, k_name in enumerate(param.keys()):
@@ -21,15 +22,16 @@ def load_model_from_h5(file):
             for key_ in param.get(k_name).keys():
                 x = param.get(k_name).get(key_)[:]
                 T = (x,) + T
+
             dict_weights[p_name] = T
 
     #  dict_config
     str_model_config = f.attrs["model_config"]
     res = json.loads(str_model_config)["config"]['layers']
+    # res = json.loads(str_model_config)
     dict_configs = dict()
     for j, x in enumerate(res):
-        x_temp = x["config"]
-        dict_configs[x_temp["name"]] = x_temp
+        dict_configs[x["name"]] = x
     keys_weights = list(dict_weights.keys())
     keys_configs = list(dict_configs.keys())
     # merge dict_weights & dict_config

@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     avg_time = [0, 0]
     outs = [[], []]
-    n_simulations = 5
+    n_simulations = 10
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()

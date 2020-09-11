@@ -13,11 +13,11 @@ import numpy as np
 def layer_conv(x, dict_conv):
     w = dict_conv[0][0]
     b = dict_conv[0][1]
-    p = int(dict_conv[1]["padding"] == "same")
-    s = dict_conv[1]["strides"][0]
+    p = int(dict_conv[1]["config"]["padding"] == "same")
+    s = dict_conv[1]["config"]["strides"][0]
     out = conv_forward_strides(x, w, b, s, p)
-    if "activation" in dict_conv[1].keys():
-        activation = dict_conv[1]["activation"]
+    if "activation" in dict_conv[1]["config"].keys():
+        activation = dict_conv[1]["config"]["activation"]
         method_to_call = getattr(activations, activation)
         output = method_to_call(out)
         return output
@@ -25,13 +25,13 @@ def layer_conv(x, dict_conv):
 
 
 def layer_pool(x, dict_pool):
-    kernel_size = dict_pool[1]["pool_size"][0]
-    stride = dict_pool[1]["strides"][0]
-    padding = int(dict_pool[1]["padding"] == "same")
+    kernel_size = dict_pool[1]["config"]["pool_size"][0]
+    stride = dict_pool[1]["config"]["strides"][0]
+    padding = int(dict_pool[1]["config"]["padding"] == "same")
     out = pool2d(x, kernel_size, stride, padding, pool_mode='max')
 
-    if "activation" in dict_pool[1].keys():
-        activation = dict_pool[1]["activation"]
+    if "activation" in dict_pool[1]["config"].keys():
+        activation = dict_pool[1]["config"]["activation"]
         method_to_call = getattr(activations, activation)
         out = method_to_call(out)
         return out
@@ -42,8 +42,8 @@ def layer_dense(x, dict_dense):
     w = dict_dense[0][0]
     b = dict_dense[0][1]
     out = dense_layer(x, w, b)
-    if "activation" in dict_dense[1].keys():
-        activation = dict_dense[1]["activation"]
+    if "activation" in dict_dense[1]["config"].keys():
+        activation = dict_dense[1]["config"]["activation"]
         method_to_call = getattr(activations, activation)
         out = method_to_call(out)
         return out
@@ -52,8 +52,8 @@ def layer_dense(x, dict_dense):
 
 def layer_flatten(x, dict_flatten):
     out = flatten_layer(x)
-    if "activation" in dict_flatten[1].keys():
-        activation = dict_flatten[1]["activation"]
+    if "activation" in dict_flatten[1]["config"].keys():
+        activation = dict_flatten[1]["config"]["activation"]
         method_to_call = getattr(activations, activation)
         out = method_to_call(out)
         return out
@@ -64,13 +64,14 @@ def compute_layer(x, dic):
     """
     :type x: object
     """
-    if "conv" in dic[1]["name"]:
+
+    if "conv" in dic[1]["name"] and dic[1]["class_name"] == "Conv2D":
         return layer_conv(x, dic)
-    elif "pool" in dic[1]["name"]:
+    elif "pool" in dic[1]["name"] and dic[1]["class_name"] == "MaxPooling2D":
         return layer_pool(x, dic)
-    elif "flatten" in dic[1]["name"]:
+    elif "flatten" in dic[1]["name"] and dic[1]["class_name"] == "Flatten":
         return layer_flatten(x, dic)
-    elif "dense" in dic[1]["name"]:
+    elif "dense" in dic[1]["name"] and dic[1]["class_name"] == "Dense":
         return layer_dense(x, dic)
     return x
 
