@@ -29,7 +29,7 @@ if __name__ == "__main__":
     model_6_firsts.summary()
     model_6_firsts.save("model_6_firsts.h5")
 
-    #
+
     # # build model with our method
     # file_path = Path(__file__).parent.parent.absolute() / "tests" / "model_6_firsts.h5"
     # dic = load_model_from_h5(file_path)
