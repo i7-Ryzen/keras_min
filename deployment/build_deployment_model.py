@@ -2,6 +2,7 @@ from activations import activations
 from custom_layers.convolution import conv_forward_strides
 from custom_layers.zeropadding2d import zeropadding2d
 from custom_layers.batchnormalization import bachnormalization
+from custom_layers.Activation import relu
 from load_from_h5.loading_from_h5 import load_model_from_h5
 from custom_layers.pooling import pool2d
 from custom_layers.dense import dense_layer
@@ -10,6 +11,10 @@ from os import listdir
 from PIL import Image
 import numpy as np
 
+
+def layer_activation(x):
+    out = relu(x)
+    return out
 
 
 def layer_bn(x, dict_bn):
@@ -100,6 +105,8 @@ def compute_layer(x, dic):
 
     if "conv" in dic[1]["name"] and dic[1]["class_name"] == "Conv2D":
         return layer_conv(x, dic)
+    elif "relu" in dic[1]["name"] and dic[1]["class_name"] == "Activation":
+        return layer_activation(x)
     elif "bn" in dic[1]["name"] and dic[1]["class_name"] == "BatchNormalization":
         return layer_bn(x, dic)
     elif "pad" in dic[1]["name"] and dic[1]["class_name"] == "ZeroPadding2D":

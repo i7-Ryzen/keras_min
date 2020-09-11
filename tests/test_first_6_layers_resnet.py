@@ -26,7 +26,7 @@ if __name__ == "__main__":
     # load model from keras for test
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
     model = load_model(file_path)
-    model_6_firsts = Model(inputs=[model.input], outputs=[Sequential(model.layers[:4]).output])
+    model_6_firsts = Model(inputs=[model.input], outputs=[Sequential(model.layers[:5]).output])
     model_6_firsts.summary()
     model_6_firsts.save("model_6_firsts.h5")
     # print(model_6_firsts.get_layer("conv1_bn").get_config())
