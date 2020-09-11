@@ -9,7 +9,6 @@ def load_model_from_h5(file):
     Args:
       file (str) : Path to the file to analyze
     """
-
     #  dict_weights
     f = h5py.File(file, mode='r')
     g = f["model_weights"]
@@ -24,6 +23,9 @@ def load_model_from_h5(file):
                 T = (x,) + T
 
             dict_weights[p_name] = T
+            # print("#"*20)
+            # print(k_name)
+            # print(T)
 
     #  dict_config
     str_model_config = f.attrs["model_config"]

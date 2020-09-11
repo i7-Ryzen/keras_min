@@ -1,5 +1,7 @@
 from activations import activations
 from custom_layers.convolution import conv_forward_strides
+from custom_layers.zeropadding2d import zeropadding2d
+from custom_layers.batchnormalization import bachnormalization
 from load_from_h5.loading_from_h5 import load_model_from_h5
 from custom_layers.pooling import pool2d
 from custom_layers.dense import dense_layer
@@ -10,11 +12,42 @@ import numpy as np
 
 
 
+def layer_bn(x, dict_bn):
+    # beta: 0
+    # gamma: 0
+    # moving_mean: 0
+    # moving_variance: 0
+    bias = dict_bn[0][3]
+    gamma = dict_bn[0][2]
+    mean = dict_bn[0][1]
+    std = dict_bn[0][0]
+    epsilon = dict_bn[1]["config"]["epsilon"]
+    out = bachnormalization(x, gamma, bias, mean, std, epsilon)
+    if "activation" in dict_bn[1]["config"].keys():
+        activation = dict_bn[1]["config"]["activation"]
+        method_to_call = getattr(activations, activation)
+        output = method_to_call(out)
+        return output
+    return out
+
+def layer_zeropadding2d(x, dict_zeropad):
+    p = dict_zeropad[1]["config"]["padding"][0][0]
+    out = zeropadding2d(x, p)
+    if "activation" in dict_zeropad[1]["config"].keys():
+        activation = dict_zeropad[1]["config"]["activation"]
+        method_to_call = getattr(activations, activation)
+        output = method_to_call(out)
+        return output
+    return out
+
+
 def layer_conv(x, dict_conv):
     w = dict_conv[0][0]
     b = dict_conv[0][1]
     p = int(dict_conv[1]["config"]["padding"] == "same")
     s = dict_conv[1]["config"]["strides"][0]
+    # print(w.shape,b.shape, p, s)
+    # exit()
     out = conv_forward_strides(x, w, b, s, p)
     if "activation" in dict_conv[1]["config"].keys():
         activation = dict_conv[1]["config"]["activation"]
@@ -67,6 +100,10 @@ def compute_layer(x, dic):
 
     if "conv" in dic[1]["name"] and dic[1]["class_name"] == "Conv2D":
         return layer_conv(x, dic)
+    elif "bn" in dic[1]["name"] and dic[1]["class_name"] == "BatchNormalization":
+        return layer_bn(x, dic)
+    elif "pad" in dic[1]["name"] and dic[1]["class_name"] == "ZeroPadding2D":
+        return layer_zeropadding2d(x, dic)
     elif "pool" in dic[1]["name"] and dic[1]["class_name"] == "MaxPooling2D":
         return layer_pool(x, dic)
     elif "flatten" in dic[1]["name"] and dic[1]["class_name"] == "Flatten":

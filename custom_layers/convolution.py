@@ -21,8 +21,8 @@ def conv_forward_strides(x, weights, b, s, p):
     f1, f2, c, k = weights.shape
     n, h, w, d = x.shape
 
-    assert (h - f1 + 2 * p) % s == 0, 'wrong convolution params'
-    assert (w - f2 + 2 * p) % s == 0, 'wrong convolution params'
+    # assert (h - f1 + 2 * p) % s == 0, 'wrong convolution params'
+    # assert (w - f2 + 2 * p) % s == 0, 'wrong convolution params'
 
     h_ = floor((h - f1 + 2 * p)/s) + 1
     w_ = floor((w - f2 + 2 * p)/s) + 1

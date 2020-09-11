@@ -32,13 +32,14 @@ if __name__ == "__main__":
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
     resnet50_model = load_model(file_path)
     batchnormalization_keras = resnet50_model.get_layer("conv1_bn")
+    print(batchnormalization_keras.get_config())
     weights_bn = batchnormalization_keras.get_weights()
     gamma, beta, mean, std = weights_bn[0], weights_bn[1], weights_bn[2], weights_bn[3]
     epsilon = 1.001e-05
 
 
     # # data_type = channels_last
-    A = np.random.normal(loc=10, scale=1, size=(1, 100, 100, 64))
+    A = np.random.normal(loc=0, scale=1, size=(1, 100, 100, 64))
     avg_time = [0, 0]
     outs = [[], []]
     x = keras.constant(A)

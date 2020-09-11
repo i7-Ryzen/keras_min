@@ -4,6 +4,9 @@ import numpy as np
 def relu(x):
     return np.maximum(x, 0)
 
+def linear(x):
+    return x
+
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
