@@ -60,7 +60,7 @@ if __name__ == "__main__":
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
     t1 = time.time()
     dic = load_model_from_h5(file_path)
-    print(time.time()-t1)
+    # print(time.time()-t1)
     deploy = Deploy(dic)
 
 
@@ -71,27 +71,30 @@ if __name__ == "__main__":
     new_image = image.resize((200, 200))
     x = np.asarray(new_image).reshape(1,3,200,200)*(1./255)
     x_reshaped = np.moveaxis(x, 1, -1)
-
-
+    o2 = model_6_firsts.predict(x_reshaped)
 
     avg_time = [0, 0]
     outs = [[], []]
     n_simulations = 1
     for _ in range(n_simulations):
-        # Keras
+        # our methods
         t1 = time.time()
         o1 = deploy(x_reshaped)
         avg_time[0] += (time.time() - t1)/n_simulations
+        print("our methods runtime")
+        print(time.time() - t1)
         outs[0].append(o1)
 
-        # our methods
-        t1 = time.time()
+        # keras
+        t2 = time.time()
         o2 = model_6_firsts.predict(x_reshaped)
-        avg_time[1] += (time.time() - t1)/n_simulations
+        avg_time[1] += (time.time() - t2)/n_simulations
+        print("keras runtime")
+        print(time.time() - t2)
         outs[1].append(o2)
 
-    print("- predictions shape of our method", outs[0])
-    print("- predictions shape of keras method", outs[1])
+    print("- predictions of our method", outs[0])
+    print("- predictions of keras method", outs[1])
     print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
     print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
-    print('- Ratio speed: (our_implementation/keras)', avg_time[0] / avg_time[1])
+    print('- Ratio speed: (keras/our_implementation)', avg_time[1] / avg_time[0])

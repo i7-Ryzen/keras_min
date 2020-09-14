@@ -67,15 +67,15 @@ if __name__ == "__main__":
 
     avg_time = [0, 0]
     outs = [[], []]
-    n_simulations = 1
+    n_simulations = 10
     for _ in range(n_simulations):
-        # Keras
+        # our methods
         t1 = time.time()
         o1 = deploy(x_reshaped)
         avg_time[0] += (time.time() - t1)/n_simulations
         outs[0].append(o1)
 
-        # our methods
+        # keras
         t1 = time.time()
         o2 = vgg16_model.predict(x_reshaped)
         avg_time[1] += (time.time() - t1)/n_simulations
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     print("- predictions of keras method", outs[1])
     print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
     print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
-    print('- Ratio speed: (our_implementation/keras)', avg_time[0] / avg_time[1])
+    print('- Ratio speed: (keras/our_implementation)', avg_time[1] / avg_time[0])
 
 
 #################################################

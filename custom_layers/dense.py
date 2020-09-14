@@ -55,7 +55,7 @@ if __name__ == "__main__":
     y = dense_keras(x).numpy()
     W, b = dense_keras.get_weights()
 
-    n_simulations = 3
+    n_simulations = 1
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()
