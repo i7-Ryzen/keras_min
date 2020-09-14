@@ -7,6 +7,7 @@ from tensorflow.keras.applications import ResNet50
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.layers import Dense
 import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
@@ -24,6 +25,14 @@ def define_model():
 
     for layer in resnet50_model.layers:
         layer.trainable = False
+
+    flat1 = resnet50_model.layers[-1].output
+    class1 = Dense(128, activation='relu', kernel_initializer='he_uniform')(flat1)
+    output = Dense(1, activation='sigmoid')(class1)
+
+    # define new model
+    resnet50_model = Model(inputs=resnet50_model.inputs, outputs=output)
+
     # compile model
     opt = SGD(lr=0.001, momentum=0.9)
     resnet50_model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
@@ -31,7 +40,7 @@ def define_model():
 
 resnet50_model = define_model()
 resnet50_model.summary()
-#resnet50_model.save("resnet50_model.h5")
+resnet50_model.save("resnet50_model.h5")
 
 # layer_names=[layer.name for layer in resnet50_model.layers]
 # layer_output = resnet50_model.get_layer("conv1_bn")

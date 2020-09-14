@@ -9,6 +9,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.layers import Input
 from tensorflow.keras.optimizers import SGD
+from tensorflow.keras import models
+from tensorflow.keras import layers
 import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
@@ -25,17 +27,19 @@ if __name__ == "__main__":
 
     # load model from keras for test
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
-    model = load_model(file_path)
-    model_6_firsts = Model(inputs=[model.input], outputs=[Sequential(model.layers[:5]).output])
-    model_6_firsts.summary()
-    model_6_firsts.save("model_6_firsts.h5")
+    model_6_firsts = load_model(file_path)
+    # model_6_firsts = Model(inputs=[model.input], outputs=[Sequential(model.layers[:17]).output])
+
+    # model_6_firsts.summary()
+    # model_6_firsts.save("model_6_firsts.h5")
     # print(model_6_firsts.get_layer("conv1_bn").get_config())
     # print(model_6_firsts.get_layer("conv1_bn").get_weights())
 
 
     # build model with our method
-    file_path = Path(__file__).parent.parent.absolute() / "tests" / "model_6_firsts.h5"
+    file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
     dic = load_model_from_h5(file_path)
+
     # print(dic["conv1_bn"])
     deploy = Deploy(dic)
 
@@ -57,17 +61,39 @@ if __name__ == "__main__":
         # Keras
         t1 = time.time()
         o1 = deploy(x_reshaped)
+        print(o1.shape)
         avg_time[0] += (time.time() - t1)/n_simulations
         outs[0].append(o1)
 
         # our methods
         t1 = time.time()
         o2 = model_6_firsts.predict(x_reshaped)
+        print(o2.shape)
         avg_time[1] += (time.time() - t1)/n_simulations
         outs[1].append(o2)
 
-    print("- predictions shape of our method", outs[0][0].shape)
-    print("- predictions shape of keras method", outs[1][0].shape)
+    print("- predictions shape of our method", outs[0][0])
+    print("- predictions shape of keras method", outs[1][0])
     print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
     print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
     print('- Ratio speed: (our_implementation/keras)', avg_time[0] / avg_time[1])
+
+    #
+    # from tensorflow.keras import backend as K
+    #
+    # inp = model_6_firsts.input  # input placeholder
+    # outputs = [layer.output for layer in model_6_firsts.layers[:21]]  # all layer outputs
+    # functors = [K.function([inp], [out]) for out in outputs]  # evaluation functions
+    #
+    # # Testing
+    # test = x_reshaped
+    # layer_outs = [func([test, 1.])[0].sum() for func in functors]
+    # # print(layer_outs)
+    # for i, layer in enumerate(model_6_firsts.layers[:21]):
+    #     print(layer.name)
+    #     print(layer_outs[i])
+
+
+
+
+

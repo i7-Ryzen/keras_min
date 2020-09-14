@@ -7,6 +7,7 @@ from load_from_h5.loading_from_h5 import load_model_from_h5
 from custom_layers.pooling import pool2d
 from custom_layers.dense import dense_layer
 from custom_layers.dense import flatten_layer
+from custom_layers.add import add
 from os import listdir
 from PIL import Image
 import numpy as np
@@ -87,6 +88,10 @@ def layer_dense(x, dict_dense):
         return out
     return out
 
+def layer_add(x1, x2, dict_add):
+    out = add(x1, x2)
+    return out
+
 
 def layer_flatten(x, dict_flatten):
     out = flatten_layer(x)
@@ -105,7 +110,7 @@ def compute_layer(x, dic):
 
     if "conv" in dic[1]["name"] and dic[1]["class_name"] == "Conv2D":
         return layer_conv(x, dic)
-    elif "relu" in dic[1]["name"] and dic[1]["class_name"] == "Activation":
+    elif dic[1]["class_name"] == "Activation":
         return layer_activation(x)
     elif "bn" in dic[1]["name"] and dic[1]["class_name"] == "BatchNormalization":
         return layer_bn(x, dic)
@@ -120,9 +125,46 @@ def compute_layer(x, dic):
     return x
 
 
-def rum_model(x, dic):
-    for layer_name in dic.keys():
-        x = compute_layer(x, dic[layer_name])
+def compute_layer_add(x1, x2, dic):
+    return layer_add(x1, x2, dic)
+
+
+
+# def rum_model(x, dic):
+#     for layer_name in dic.keys():
+#         x = compute_layer(x, dic[layer_name])
+#     return x
+
+def rum_model_resnet(x, dic):
+    i = 0
+    dict_layers = {}
+    layer_name_init = list(dic.keys())[0]
+    x = compute_layer(x, dic[layer_name_init])
+    dict_layers[layer_name_init] = x
+
+    for layer_name in list(dic.keys())[1:]:
+        connected_to = dic[layer_name][1]["inbound_nodes"]
+
+        if len(connected_to[0]) == 1:
+            connected_to_name = connected_to[0][0][0]
+            x = compute_layer(dict_layers[connected_to_name], dic[layer_name])
+            dict_layers[layer_name] = x
+
+        else:
+            connected_to_name_1 = connected_to[0][0][0]
+            connected_to_name_2 = connected_to[0][1][0]
+            x = compute_layer_add(dict_layers[connected_to_name_1], dict_layers[connected_to_name_2], dic[layer_name])
+            dict_layers[layer_name] = x
+
+        # i = i + 1
+        # print(layer_name)
+        # print(x.sum())
+        # if i >= 20:
+        #     exit()
+
+
+
+
     return x
 
 
@@ -130,7 +172,8 @@ class Deploy:
     def __init__(self, dic):
         self.dic = dic
     def __call__(self, x):
-        return rum_model(x, self.dic)
+        # return rum_model(x, self.dic)
+        return rum_model_resnet(x, self.dic)
 
 
 

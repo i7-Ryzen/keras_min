@@ -9,7 +9,9 @@ def linear(x):
 
 
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    out1 = np.exp(-x)
+    out = 1 / (1 + out1)
+    return out
 
 
 def softmax_function(x):
