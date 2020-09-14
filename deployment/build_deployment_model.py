@@ -135,8 +135,10 @@ def compute_layer_add(x1, x2, dic):
 #         x = compute_layer(x, dic[layer_name])
 #     return x
 
-def rum_model_resnet(x, dic):
-    i = 0
+def rum_model(x, dic):
+
+    # for resnet and vgg and basic model
+
     dict_layers = {}
     layer_name_init = list(dic.keys())[0]
     x = compute_layer(x, dic[layer_name_init])
@@ -156,15 +158,6 @@ def rum_model_resnet(x, dic):
             x = compute_layer_add(dict_layers[connected_to_name_1], dict_layers[connected_to_name_2], dic[layer_name])
             dict_layers[layer_name] = x
 
-        # i = i + 1
-        # print(layer_name)
-        # print(x.sum())
-        # if i >= 20:
-        #     exit()
-
-
-
-
     return x
 
 
@@ -173,7 +166,7 @@ class Deploy:
         self.dic = dic
     def __call__(self, x):
         # return rum_model(x, self.dic)
-        return rum_model_resnet(x, self.dic)
+        return rum_model(x, self.dic)
 
 
 

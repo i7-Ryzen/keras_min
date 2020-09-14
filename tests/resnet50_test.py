@@ -10,10 +10,10 @@ from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.layers import Dense
 import numpy as np
 from PIL import Image
-from tensorflow.keras.models import load_model
+
+
 
 # define the model
-
 def define_model():
     # load model
     resnet50_model = ResNet50(include_top=False, weights='imagenet', input_shape=(200, 200, 3))
@@ -42,8 +42,54 @@ resnet50_model = define_model()
 resnet50_model.summary()
 resnet50_model.save("resnet50_model.h5")
 
-# layer_names=[layer.name for layer in resnet50_model.layers]
-# layer_output = resnet50_model.get_layer("conv1_bn")
-# weights_bn = layer_output.get_weights()
-#
-# gamma, beta, mean, std = weights_bn[0], weights_bn[1], weights_bn[2], weights_bn[3]
+
+
+if __name__ == "__main__":
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # to ignore warning errors
+    import time
+    from tensorflow.keras.models import load_model
+    from pathlib import Path
+
+    # load model from keras for test
+    file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
+    model_6_firsts = load_model(file_path)
+
+
+    # build model with our method
+    file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
+    dic = load_model_from_h5(file_path)
+    deploy = Deploy(dic)
+
+
+    # image data
+    dataset_home = Path(__file__).parent.parent.absolute() / "tests" / 'test_img/'
+    image_name = next(iter(listdir(dataset_home)[:3]))
+    image = Image.open(dataset_home / image_name)
+    new_image = image.resize((200, 200))
+    x = np.asarray(new_image).reshape(1,3,200,200)*(1./255)
+    x_reshaped = np.moveaxis(x, 1, -1)
+
+
+
+    avg_time = [0, 0]
+    outs = [[], []]
+    n_simulations = 1
+    for _ in range(n_simulations):
+        # Keras
+        t1 = time.time()
+        o1 = deploy(x_reshaped)
+        avg_time[0] += (time.time() - t1)/n_simulations
+        outs[0].append(o1)
+
+        # our methods
+        t1 = time.time()
+        o2 = model_6_firsts.predict(x_reshaped)
+        avg_time[1] += (time.time() - t1)/n_simulations
+        outs[1].append(o2)
+
+    print("- predictions shape of our method", outs[0][0])
+    print("- predictions shape of keras method", outs[1][0])
+    print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
+    print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
+    print('- Ratio speed: (our_implementation/keras)', avg_time[0] / avg_time[1])

@@ -78,20 +78,7 @@ if __name__ == "__main__":
     print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
     print('- Ratio speed: (our_implementation/keras)', avg_time[0] / avg_time[1])
 
-    #
-    # from tensorflow.keras import backend as K
-    #
-    # inp = model_6_firsts.input  # input placeholder
-    # outputs = [layer.output for layer in model_6_firsts.layers[:21]]  # all layer outputs
-    # functors = [K.function([inp], [out]) for out in outputs]  # evaluation functions
-    #
-    # # Testing
-    # test = x_reshaped
-    # layer_outs = [func([test, 1.])[0].sum() for func in functors]
-    # # print(layer_outs)
-    # for i, layer in enumerate(model_6_firsts.layers[:21]):
-    #     print(layer.name)
-    #     print(layer_outs[i])
+
 
 
 
