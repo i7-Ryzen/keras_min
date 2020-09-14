@@ -58,7 +58,9 @@ if __name__ == "__main__":
 
     # build model with our method
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
+    t1 = time.time()
     dic = load_model_from_h5(file_path)
+    print(time.time()-t1)
     deploy = Deploy(dic)
 
 
@@ -88,8 +90,8 @@ if __name__ == "__main__":
         avg_time[1] += (time.time() - t1)/n_simulations
         outs[1].append(o2)
 
-    print("- predictions shape of our method", outs[0][0])
-    print("- predictions shape of keras method", outs[1][0])
+    print("- predictions shape of our method", outs[0])
+    print("- predictions shape of keras method", outs[1])
     print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
     print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
     print('- Ratio speed: (our_implementation/keras)', avg_time[0] / avg_time[1])
