@@ -51,7 +51,8 @@ if __name__ == "__main__":
     import time
     from tensorflow.keras.models import load_model
     from pathlib import Path
-
+    import matplotlib.pyplot as plt
+    import seaborn as sns
     # load model from keras for test
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
     model_6_firsts = load_model(file_path)
@@ -76,77 +77,88 @@ if __name__ == "__main__":
     o2 = model_6_firsts.predict(x_reshaped)
 
     avg_time = [0, 0]
+    time_list_1 = [[], []]
+    time_list_2 = [[], []]
     outs = [[], []]
-    n_simulations = 10
+    n_simulations = 20
     for _ in range(n_simulations):
         # our methods
-        t1 = time.time()
+        t1_1 = time.time()
         dic = load_model_from_h5(file_path)
+        t1_2 = time.time()
         deploy = Deploy(dic)
         o1 = deploy(x_reshaped)
-        avg_time[0] += (time.time() - t1)/n_simulations
+        temp_1 = (time.time() - t1_1)
+        temp_2 = (time.time() - t1_2)
+        avg_time[0] += temp_1
+        time_list_1[0].append(temp_1)
+        time_list_2[0].append(temp_2)
         print("our methods runtime")
-        print(time.time() - t1)
-        outs[0].append(o1)
+        print(temp_1,temp_2)
+        outs[0].append(float((o1)))
 
         # keras
-        t2 = time.time()
-        model_6_firsts = load_model(file_path)
-        o2 = model_6_firsts.predict(x_reshaped)
-        avg_time[1] += (time.time() - t2)/n_simulations
-        print("keras runtime")
-        print(time.time() - t2)
-        outs[1].append(o2)
+        t2_1 = time.time()
+        model_resnet50 = load_model(file_path)
+        t2_2 = time.time()
+        o2 = model_resnet50.predict(x_reshaped)
+        temp_1 = (time.time() - t2_1)
+        temp_2 = (time.time() - t2_2)
+        avg_time[1] += temp_1
+        time_list_1[1].append(temp_1)
+        time_list_2[1].append(temp_2)
+        print("keras")
+        print(temp_1,temp_2)
+        outs[1].append(float((o2)))
+
 
     print("- predictions of our method", outs[0])
     print("- predictions of keras method", outs[1])
-    print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
-    print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
+    # print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
+    print("- the average run time of keras: ", avg_time[1]/n_simulations, "the average run time  of our implementation: ", avg_time[0]/n_simulations)
     print('- Ratio speed: (keras/our_implementation)', avg_time[1] / avg_time[0])
 
 
-# our methods runtime
-# 0.6467864513397217
-# keras runtime
-# 3.841763973236084
-# our methods runtime
-# 0.5668859481811523
-# keras runtime
-# 3.2340502738952637
-# our methods runtime
-# 0.5699708461761475
-# keras runtime
-# 3.3078646659851074
-# our methods runtime
-# 0.5267186164855957
-# keras runtime
-# 3.3806936740875244
-# our methods runtime
-# 0.572357177734375
-# keras runtime
-# 3.452599048614502
-# our methods runtime
-# 0.5805795192718506
-# keras runtime
-# 3.44966459274292
-# our methods runtime
-# 0.5792791843414307
-# keras runtime
-# 3.154789686203003
-# our methods runtime
-# 0.56538987159729
-# keras runtime
-# 3.409698963165283
-# our methods runtime
-# 0.5203807353973389
-# keras runtime
-# 3.1763288974761963
-# our methods runtime
-# 0.5225241184234619
-# keras runtime
-# 3.504319667816162
-# - predictions of our method [array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]])]
-# - predictions of keras method [array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32)]
-# - difference of predictions  [-4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07]
-# - the average run time of keras:  3.3911612510681155 the average run time  of our implementation:  0.5650691270828248
-# - Ratio speed: (keras/our_implementation) 6.001321057080256
+
+    # ################################################
+    # plot1 : the distrubution of runtime with loading model time
+    # ################################################
+    dictio_with = {"Numpy":time_list_1[0], "keras":time_list_1[1]}
+    for name in dictio_with.keys():
+        # Draw the density plot
+        sns.distplot(dictio_with[name], hist=True, kde=True,
+                     kde_kws={'linewidth': 3},
+                     label= name)
+
+    # Plot formatting
+    plt.legend(prop={'size': 7})
+    plt.title('resnet50 : runtime density with loading the model')
+    plt.xlabel('runtime (s)')
+    plt.ylabel('Density')
+    plt.savefig(Path(__file__).parent.absolute() / "plots" /  "resnet50_model_with_loading")
+    plt.show()
+
+    # ################################################
+    # plot2 : the distrubution of runtime without loading model time
+    # ################################################
+
+    dictio_without = {"Numpy":time_list_2[0], "keras":time_list_2[1]}
+
+    for name in dictio_without.keys():
+        # Draw the density plot
+        sns.distplot(dictio_without[name], hist=True, kde=True,
+                     kde_kws={'linewidth': 3},
+                     label= name)
+
+    # Plot formatting
+    plt.legend(prop={'size': 7})
+    plt.title('resnet50 : runtime density without loading the model')
+    plt.xlabel('runtime (s)')
+    plt.ylabel('Density')
+    plt.savefig(Path(__file__).parent.absolute() / "plots" /  "resnet50_model_without_loading")
+    plt.show()
+
+
+
+
+

@@ -22,7 +22,7 @@ if __name__ == "__main__":
     dic = load_model_from_h5(file_path)
     pickle_model(dic, 'new_model.p')
 
-    # print the new model
-    file = open('new_model.p', 'rb')
-    data = pickle.load(file)
-    print(data)
+    # # print the new model
+    # file = open('new_model.p', 'rb')
+    # data = pickle.load(file)
+    # print(data)
