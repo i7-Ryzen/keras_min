@@ -44,28 +44,27 @@ if __name__ == "__main__":
     import time
     import tensorflow.keras.backend as keras
     import tensorflow.keras.layers as layers
+    import numpy as np
 
     A = np.random.randn(3, 200, 200, 3).astype('float32')
 
     avg_time = [0, 0]
     outs = [[], []]
-    x = keras.constant(A)
 
-    dense_keras = layers.Dense(units=1024, activation=None, input_shape=x.shape)
-    y = dense_keras(x).numpy()
-    W, b = dense_keras.get_weights()
-
-    n_simulations = 1
+    n_simulations = 3
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()
+        dense_keras = layers.Dense(units=1024, activation=None, input_shape=(3, 200, 200, 3))
+        x = keras.constant(A)
         o1 = dense_keras(x).numpy()
         avg_time[0] += (time.time() - t1) / n_simulations
         outs[0].append(o1)
 
-        # our methods
+        # numpy method
+        W, b = dense_keras.get_weights()
         t1 = time.time()
-        o2 = dense_layer(A, W, b)
+        o2 = np.dot(A, W) + b
         avg_time[1] += (time.time() - t1) / n_simulations
         outs[1].append(o2)
 
@@ -77,6 +76,7 @@ if __name__ == "__main__":
 # result
 #################################################
 
-# difference of predictions  [9.671998131229864e-05, 9.671998131229864e-05, 9.671998131229864e-05]
-# the average run time of keras:  0.42083819707234704 the average run time  of our implementation:  3.2441244920094805
-# Ratio speed: (our_implementation/keras) 7.708721581305932
+# difference of predictions  [-2.4116001e-05, -2.4116001e-05, -2.4116001e-05]
+# the average run time of keras:  0.2522510687510172 the average run time  of our implementation:  2.8951672712961836
+# Ratio speed: (our_implementation/keras) 11.477324102653613
+

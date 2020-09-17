@@ -10,6 +10,8 @@ from tensorflow.keras.layers import Flatten
 from tensorflow.keras.optimizers import SGD
 import numpy as np
 from PIL import Image
+from tests.save_dictionnary import pickle_model
+
 from tensorflow.keras.models import load_model
 
 # define the model
@@ -50,6 +52,7 @@ if __name__ == "__main__":
 
     # build model
     dic = load_model_from_h5(file_path)
+    pickle_model(dic, "new_vgg16.p")
     deploy = Deploy(dic)
 
     # image data
@@ -71,14 +74,21 @@ if __name__ == "__main__":
     for _ in range(n_simulations):
         # our methods
         t1 = time.time()
+        dic = load_model_from_h5(file_path)
+        deploy = Deploy(dic)
         o1 = deploy(x_reshaped)
         avg_time[0] += (time.time() - t1)/n_simulations
+        print("our methods runtime")
+        print(time.time() - t1)
         outs[0].append(o1)
 
         # keras
-        t1 = time.time()
+        t2 = time.time()
+        vgg16_model = load_model(file_path)
         o2 = vgg16_model.predict(x_reshaped)
-        avg_time[1] += (time.time() - t1)/n_simulations
+        avg_time[1] += (time.time() - t2)/n_simulations
+        print("keras runtime")
+        print(time.time() - t2)
         outs[1].append(o2)
 
     print("- predictions of our method", outs[0])
@@ -88,11 +98,12 @@ if __name__ == "__main__":
     print('- Ratio speed: (keras/our_implementation)', avg_time[1] / avg_time[0])
 
 
+
+
 #################################################
 # result for vgg16.h5
 #################################################
 
-# Model: "functional_1"
 # _________________________________________________________________
 # Layer (type)                 Output Shape              Param #
 # =================================================================
@@ -144,8 +155,48 @@ if __name__ == "__main__":
 # Trainable params: 2,359,553
 # Non-trainable params: 14,714,688
 # _________________________________________________________________
-# - predictions of our method [array([[0.31569217]]), array([[0.31569217]]), array([[0.31569217]]), array([[0.31569217]]), array([[0.31569217]])]
-# - predictions of keras method [array([[0.31569234]], dtype=float32), array([[0.31569234]], dtype=float32), array([[0.31569234]], dtype=float32), array([[0.31569234]], dtype=float32), array([[0.31569234]], dtype=float32)]
-# - difference of predictions  [-1.6569631033913623e-07, -1.6569631033913623e-07, -1.6569631033913623e-07, -1.6569631033913623e-07, -1.6569631033913623e-07]
-# - the average run time of keras:  0.22639803886413576 the average run time  of our implementation:  0.5668399333953857
-# - Ratio speed: (our_implementation/keras) 2.503731641136491
+# our methods runtime
+# 0.6663401126861572
+# keras runtime
+# 0.7601346969604492
+# our methods runtime
+# 0.7366087436676025
+# keras runtime
+# 0.46868395805358887
+# our methods runtime
+# 0.6871731281280518
+# keras runtime
+# 0.45275235176086426
+# our methods runtime
+# 0.700108528137207
+# keras runtime
+# 0.44780778884887695
+# our methods runtime
+# 0.6964170932769775
+# keras runtime
+# 0.44745683670043945
+# our methods runtime
+# 0.6936662197113037
+# keras runtime
+# 0.4454169273376465
+# our methods runtime
+# 0.7437295913696289
+# keras runtime
+# 0.4490516185760498
+# our methods runtime
+# 0.7004189491271973
+# keras runtime
+# 0.46564269065856934
+# our methods runtime
+# 0.6940574645996094
+# keras runtime
+# 0.44858574867248535
+# our methods runtime
+# 0.7003269195556641
+# keras runtime
+# 0.4474794864654541
+# - predictions of our method [array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]]), array([[0.77910069]])]
+# - predictions of keras method [array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32), array([[0.77910066]], dtype=float32)]
+# - difference of predictions  [3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08, 3.190474306968838e-08]
+# - the average run time of keras:  0.4832854032516479 the average run time  of our implementation:  0.7018662929534912
+# - Ratio speed: (keras/our_implementation) 0.6885718948233813

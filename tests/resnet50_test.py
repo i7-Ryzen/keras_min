@@ -8,6 +8,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.layers import Dense
+from tests.save_dictionnary import pickle_model
 import numpy as np
 from PIL import Image
 
@@ -60,6 +61,7 @@ if __name__ == "__main__":
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
     t1 = time.time()
     dic = load_model_from_h5(file_path)
+    pickle_model(dic, "new_resnet50.p")
     # print(time.time()-t1)
     deploy = Deploy(dic)
 
@@ -75,10 +77,12 @@ if __name__ == "__main__":
 
     avg_time = [0, 0]
     outs = [[], []]
-    n_simulations = 1
+    n_simulations = 10
     for _ in range(n_simulations):
         # our methods
         t1 = time.time()
+        dic = load_model_from_h5(file_path)
+        deploy = Deploy(dic)
         o1 = deploy(x_reshaped)
         avg_time[0] += (time.time() - t1)/n_simulations
         print("our methods runtime")
@@ -87,6 +91,7 @@ if __name__ == "__main__":
 
         # keras
         t2 = time.time()
+        model_6_firsts = load_model(file_path)
         o2 = model_6_firsts.predict(x_reshaped)
         avg_time[1] += (time.time() - t2)/n_simulations
         print("keras runtime")
@@ -98,3 +103,50 @@ if __name__ == "__main__":
     print("- difference of predictions ", [(o1 - o2).sum() for o1, o2 in zip(*outs)])
     print("- the average run time of keras: ", avg_time[1], "the average run time  of our implementation: ", avg_time[0])
     print('- Ratio speed: (keras/our_implementation)', avg_time[1] / avg_time[0])
+
+
+# our methods runtime
+# 0.6467864513397217
+# keras runtime
+# 3.841763973236084
+# our methods runtime
+# 0.5668859481811523
+# keras runtime
+# 3.2340502738952637
+# our methods runtime
+# 0.5699708461761475
+# keras runtime
+# 3.3078646659851074
+# our methods runtime
+# 0.5267186164855957
+# keras runtime
+# 3.3806936740875244
+# our methods runtime
+# 0.572357177734375
+# keras runtime
+# 3.452599048614502
+# our methods runtime
+# 0.5805795192718506
+# keras runtime
+# 3.44966459274292
+# our methods runtime
+# 0.5792791843414307
+# keras runtime
+# 3.154789686203003
+# our methods runtime
+# 0.56538987159729
+# keras runtime
+# 3.409698963165283
+# our methods runtime
+# 0.5203807353973389
+# keras runtime
+# 3.1763288974761963
+# our methods runtime
+# 0.5225241184234619
+# keras runtime
+# 3.504319667816162
+# - predictions of our method [array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]]), array([[0.74037338]])]
+# - predictions of keras method [array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32), array([[0.74037385]], dtype=float32)]
+# - difference of predictions  [-4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07, -4.723545041773747e-07]
+# - the average run time of keras:  3.3911612510681155 the average run time  of our implementation:  0.5650691270828248
+# - Ratio speed: (keras/our_implementation) 6.001321057080256
