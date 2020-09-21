@@ -48,8 +48,13 @@ def layer_zeropadding2d(x, dict_zeropad):
 
 
 def layer_conv(x, dict_conv):
+
     w = dict_conv[0][0]
-    b = dict_conv[0][1]
+    if dict_conv[1]["config"]["use_bias"] == True:
+        b = dict_conv[0][1]
+    else :
+        b = 0
+
     p = int(dict_conv[1]["config"]["padding"] == "same")
     s = dict_conv[1]["config"]["strides"][0]
     # print(w.shape,b.shape, p, s)
@@ -146,9 +151,14 @@ def rum_model(x, dic):
 
     for layer_name in list(dic.keys())[1:]:
         connected_to = dic[layer_name][1]["inbound_nodes"]
+        # print(layer_name)
+        # print(connected_to)
+        # print("khra")
+        # print(dic[layer_name])
 
         if len(connected_to[0]) == 1:
             connected_to_name = connected_to[0][0][0]
+            # print(dict_layers[connected_to_name], dic[layer_name])
             x = compute_layer(dict_layers[connected_to_name], dic[layer_name])
             dict_layers[layer_name] = x
 
@@ -178,7 +188,7 @@ if __name__ == "__main__":
     from pathlib import Path
 
     # load model from keras for test
-    file_path = Path(__file__).parent.parent.absolute() / "tests" / "model.h5"
+    file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
     model = load_model(file_path)
     #model.summary()
 

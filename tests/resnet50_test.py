@@ -3,7 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # to ignore warning errors
 from os import listdir
 from deployment.build_deployment_model import Deploy
 from load_from_h5.loading_from_h5 import load_model_from_h5
-from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.applications import ResNet50, ResNet152V2
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.optimizers import SGD
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     import seaborn as sns
     # load model from keras for test
     file_path = Path(__file__).parent.parent.absolute() / "tests" / "resnet50_model.h5"
-    model_6_firsts = load_model(file_path)
+    resnet50_model_keras = load_model(file_path)
 
 
     # build model with our method
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     new_image = image.resize((200, 200))
     x = np.asarray(new_image).reshape(1,3,200,200)*(1./255)
     x_reshaped = np.moveaxis(x, 1, -1)
-    o2 = model_6_firsts.predict(x_reshaped)
+    o2 = resnet50_model_keras.predict(x_reshaped)
 
     avg_time = [0, 0]
     time_list_1 = [[], []]

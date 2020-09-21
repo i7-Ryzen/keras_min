@@ -29,6 +29,7 @@ def define_model():
     # Flatten the first layer
     classifier.add(Flatten())
     # We add layers with Relu as activation type, and units number of nodes.
+    classifier.add(Dense(activation='relu', units=1024, kernel_initializer=initializers.RandomNormal(stddev=0.01),bias_initializer=initializers.Zeros()))
     classifier.add(Dense(activation='relu', units=128, kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros()))
     classifier.add(Dense(activation='relu', units=64, kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros()))
     classifier.add(Dense(activation='relu', units=32, kernel_initializer=initializers.RandomNormal(stddev=0.01), bias_initializer=initializers.Zeros()))
