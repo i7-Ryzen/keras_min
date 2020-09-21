@@ -31,8 +31,8 @@ The code is compatible with models using the following functions:
 ## Results 
 In this section, we benchmark the performance of our Keras minimizer using a simple model between using Keras, numpy, cython+cnumpy, and cython.
 There are two main reasons to deploy the model with numpy/cython instead of tensorflow:
-	1. The execution time on the CPU is faster with numpy/cython compared to TensorFlow / keras.
-	2. Reduce the size of the model storage.
+1. The execution time on the CPU is faster with numpy/cython compared to TensorFlow / keras.
+2. Reduce the size of the model storage.
 
 ## Challenges
 
