@@ -43,7 +43,8 @@ def conv_forward_strides(x, weights, b, s, p):
                      strides=(x.strides[0], s * x.strides[1], s * x.strides[2], x.strides[3]) + x.strides[1:3]
                      ).reshape(-1, d*f1*f2)
     weights = np.moveaxis(weights, 2, 0).reshape(-1,k)
-    f = np.dot(a_w, weights, ) + b
+    # f = np.dot(a_w, weights, ) + b
+    f = np.matmul(a_w, weights, ) + b
     return f.reshape(n, h_, w_, k)
 
 

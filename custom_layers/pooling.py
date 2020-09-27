@@ -60,8 +60,9 @@ if __name__ == "__main__":
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()
-        o1 = pool2d_keras(x).numpy()
+        o1 = pool2d_keras(x)
         avg_time[0] += (time.time() - t1)/n_simulations
+        o1 = o1.numpy()
         outs[0].append(o1)
 
         # our methods

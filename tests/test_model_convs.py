@@ -20,26 +20,27 @@ from tensorflow.keras import initializers
 from tests.save_dictionnary import pickle_model
 import matplotlib.pyplot as plt
 import seaborn as sns
-from utils.utils_tests import define_model_dense
+from utils.utils_tests import  define_model_conv
 
 
 
-m = 100
-number_nodes=128
-basic_model = define_model_dense(m=m,number_nodes=number_nodes)
+m = 10
+kernel_size=3
+number_filter = 8
+basic_model = define_model_conv(m=m,kernel_size=kernel_size, number_filter=number_filter)
 basic_model.summary()
-basic_model.save("model_dense.h5")
+basic_model.save("model_conv.h5")
 
 
 if __name__ == "__main__":
-    file_path = Path(__file__).parent.absolute()/"model_dense.h5"
+    file_path = Path(__file__).parent.absolute()/"model_conv.h5"
     basic_model = load_model(file_path)
     basic_model.summary()
 
 
     # build model
     dic = load_model_from_h5(file_path)
-    pickle_model(dic, "new_model_dense.p")
+    pickle_model(dic, "new_model_conv.p")
     deploy = Deploy(dic)
 
     # image data
@@ -54,7 +55,7 @@ if __name__ == "__main__":
     time_list_1 = [[], []]
     time_list_2 = [[], []]
     outs = [[], []]
-    n_simulations = 10
+    n_simulations = 20
     for _ in range(n_simulations):
         # our methods
         t1_1 = time.time()
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     print('- Ratio speed: (keras/our_implementation)', avg_time[1] / avg_time[0])
 
     # ################################################
-    # plot1 : the distrubution of runtime with loading model time
+    # plot1_1 : the distrubution of runtime with loading model time
     # ################################################
     dictio_with = {"Numpy":time_list_1[0], "keras":time_list_1[1]}
     for name in dictio_with.keys():
@@ -104,15 +105,31 @@ if __name__ == "__main__":
 
     # Plot formatting
     plt.legend(prop={'size': 7})
-    plt.title('basic_model_dense ' + str(m) + ' , ' + str(number_nodes) + ' : runtime density with loading the model',loc='center', wrap=True)
+    plt.title('basic_model_conv ' + str(m) + ' , ' + str(kernel_size) + ' : runtime density with loading the model',loc='center', wrap=True)
     plt.xlabel('runtime (s)')
     plt.ylabel('Density')
-    plt.savefig(Path(__file__).parent.absolute() / "plots" /  "basic_model_dense_with_loading")
+    plt.savefig(Path(__file__).parent.absolute() / "plots" /  "basic_model_conv_with_loading")
+    plt.show()
+
+    # ################################################
+    # plot1_2 : the time serie of runtime with loading model time
+    # ################################################
+    for name in dictio_with.keys():
+        # Draw the density plot
+        sns.lineplot(x = np.arange(len(dictio_with[name])) ,y = dictio_with[name], label=name)
+
+    # Plot formatting
+    plt.legend(prop={'size': 7})
+    plt.title('basic_model_conv ' + str(m) + ' , ' + str(kernel_size) + ' : runtime  with loading the model',
+              loc='center', wrap=True)
+    plt.xlabel('runtime (s)')
+    plt.ylabel('Density')
+    plt.savefig(Path(__file__).parent.absolute() / "plots" / "basic_model_conv_with_loading")
     plt.show()
 
 
     # ##############################################################
-    # plot2 : the distrubution of runtime without loading model time
+    # plot2_2 : the distrubution of runtime without loading model time
     # ##############################################################
     dictio_without = {"Numpy":time_list_2[0], "keras":time_list_2[1]}
 
@@ -123,8 +140,22 @@ if __name__ == "__main__":
                      label= name)
     # Plot formatting
     plt.legend(prop={'size': 7})
-    plt.title('basic_model_dense ' + str(m) + ' , ' + str(number_nodes) +': runtime density without loading the model', loc='center', wrap=True)
+    plt.title('basic_model_conv ' + str(m) + ' , ' + str(kernel_size) +': runtime time serie without loading the model', loc='center', wrap=True)
     plt.xlabel('runtime (s)')
     plt.ylabel('Density')
-    plt.savefig(Path(__file__).parent.absolute() / "plots" /  "basic_model_dense_without_loading")
+    plt.savefig(Path(__file__).parent.absolute() / "plots" /  "basic_model_conv_without_loading")
+    plt.show()
+
+    # ################################################
+    # plot2_2 : the time serie of runtime with loading model time
+    # ################################################
+    for name in dictio_without.keys():
+        # Draw the density plot
+        sns.lineplot(x = np.arange(len(dictio_without[name])) ,y = dictio_without[name], label=name)
+    # Plot formatting
+    plt.legend(prop={'size': 7})
+    plt.title('basic_model_conv ' + str(m) + ' , ' + str(kernel_size) +': runtime time serie without loading the model', loc='center', wrap=True)
+    plt.xlabel('runtime (s)')
+    plt.ylabel('Density')
+    plt.savefig(Path(__file__).parent.absolute() / "plots" /  "basic_model_conv_without_loading")
     plt.show()

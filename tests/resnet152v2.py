@@ -80,7 +80,7 @@ if __name__ == "__main__":
     time_list_1 = [[], []]
     time_list_2 = [[], []]
     outs = [[], []]
-    n_simulations = 20
+    n_simulations = 5
     for _ in range(n_simulations):
         # our methods
         t1_1 = time.time()
@@ -99,17 +99,18 @@ if __name__ == "__main__":
 
         # keras
         t2_1 = time.time()
-        model_resnet50 = load_model(file_path)
+        model_resnet152 = load_model(file_path)
         t2_2 = time.time()
-        o2 = model_resnet50.predict(x_reshaped)
+        o2 = model_resnet152.predict(x_reshaped)
         temp_1 = (time.time() - t2_1)
         temp_2 = (time.time() - t2_2)
         avg_time[1] += temp_1
         time_list_1[1].append(temp_1)
         time_list_2[1].append(temp_2)
         print("keras")
-        print(temp_1, temp_2)
+        print(temp_1,temp_2)
         outs[1].append(float((o2)))
+
 
 
     print("- predictions of our method", outs[0])

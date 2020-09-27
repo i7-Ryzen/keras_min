@@ -71,7 +71,7 @@ if __name__ == "__main__":
     time_list_1 = [[], []]
     time_list_2 = [[], []]
     outs = [[], []]
-    n_simulations = 20
+    n_simulations = 5
     for _ in range(n_simulations):
         # our methods
         t1_1 = time.time()
@@ -112,7 +112,8 @@ if __name__ == "__main__":
 
     # ################################################
     # plot1 : the distrubution of runtime with loading model time
-    # ################################################    dictio_with = {"Numpy":time_list_1[0], "keras":time_list_1[1]}
+    # ################################################
+    dictio_with = {"Numpy":time_list_1[0], "keras":time_list_1[1]}
     for name in dictio_with.keys():
         # Draw the density plot
         sns.distplot(dictio_with[name], hist=True, kde=True,

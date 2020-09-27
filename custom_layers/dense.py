@@ -30,7 +30,8 @@ def dense_layer(x, w, b):
   - out: output, of shape (N, M)
   - cache: (x, w, b)
   """
-    out = np.dot(x, w) + b
+    out =  np.matmul(x, w) + b
+    # out = np.dot(x, w) + b
     return out
 
 
@@ -45,8 +46,9 @@ if __name__ == "__main__":
     import tensorflow.keras.backend as keras
     import tensorflow.keras.layers as layers
     import numpy as np
+    from tensorflow.keras.models import Sequential
 
-    A = np.random.randn(3, 200, 200, 3).astype('float32')
+    A = np.random.randn(1, 200, 200, 3).astype('float32')
 
     avg_time = [0, 0]
     outs = [[], []]
@@ -54,17 +56,19 @@ if __name__ == "__main__":
     n_simulations = 3
     for _ in range(n_simulations):
         # Keras
+        dense_keras = layers.Dense(units = 1024, activation=None, input_shape=(1, 200, 200, 3))
         t1 = time.time()
-        dense_keras = layers.Dense(units=1024, activation=None, input_shape=(3, 200, 200, 3))
-        x = keras.constant(A)
-        o1 = dense_keras(x).numpy()
+        o1 = dense_keras(A)
         avg_time[0] += (time.time() - t1) / n_simulations
+        o1 = o1.numpy()
         outs[0].append(o1)
 
         # numpy method
         W, b = dense_keras.get_weights()
         t1 = time.time()
-        o2 = np.dot(A, W) + b
+        # o2 = np.dot(A, W) + b
+        # o2 = np.matmul(A, W) + b
+        o2 = dense_layer(A, W, b)
         avg_time[1] += (time.time() - t1) / n_simulations
         outs[1].append(o2)
 
