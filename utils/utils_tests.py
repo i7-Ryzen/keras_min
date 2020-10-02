@@ -1,25 +1,13 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # to ignore warning errors
-from os import listdir
-from deployment.build_deployment_model import Deploy
-from load_from_h5.loading_from_h5 import load_model_from_h5
-import numpy as np
-from PIL import Image
-from tensorflow.keras.models import load_model
-import time
-from pathlib import Path
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Convolution2D
-from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Dense, Dropout, Input
-from tensorflow.keras.initializers import Constant
+from tensorflow.keras.layers import Dense, Input
 from tensorflow.keras.models import Model
 from tensorflow.keras import initializers
-from tests.save_dictionnary import pickle_model
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 
 def define_model_conv(m, kernel_size, number_filter):
     classifier = Sequential()

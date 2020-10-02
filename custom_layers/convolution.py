@@ -29,7 +29,10 @@ def conv_forward_strides(x, weights, b, s, p):
 
     # Padding
     # x = np.pad(x, p, mode='constant')
+    # t1 = time.time()
     x = np.pad(x, ((0, 0), (p, p), (p, p), (0, 0)), 'constant')
+    # t2 = time.time()
+    # print(t2 - t1)
     # Window view of a
     output_shape = (
         x.shape[0],
@@ -37,14 +40,24 @@ def conv_forward_strides(x, weights, b, s, p):
         (x.shape[2] - f2) // s + 1,
         x.shape[3]
     )
+    # t3 = time.time()
+    # print(t3 - t2 )
+
     kernel_size = (f1, f2)
     a_w = as_strided(x,
                      shape=output_shape + kernel_size,
                      strides=(x.strides[0], s * x.strides[1], s * x.strides[2], x.strides[3]) + x.strides[1:3]
                      ).reshape(-1, d*f1*f2)
+    # t4 = time.time()
+    # print(t4 - t3)
     weights = np.moveaxis(weights, 2, 0).reshape(-1,k)
     # f = np.dot(a_w, weights, ) + b
+    # t5 = time.time()
+    # print(t5 - t4)
     f = np.matmul(a_w, weights, ) + b
+    # t6 = time.time()
+    # print(t6 - t5)
+    # print("#"*10)
     return f.reshape(n, h_, w_, k)
 
 
@@ -64,19 +77,20 @@ if __name__ ==  "__main__":
     outs = [[], []]
     x = keras.constant(A)
     # pool2d_keras = layers.MaxPooling2D(pool_size=(2, 2), padding="same", input_shape=x.shape[1:])
-    conv2d_keras = layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), padding="same", activation=None,
+    conv2d_keras = layers.Conv2D(filters=32, kernel_size=(3, 3), strides=(1, 1), padding="same", activation=None,
                                  input_shape=x.shape)
 
-    y = conv2d_keras(x).numpy()
-    W, b = conv2d_keras.get_weights()
 
-    n_simulations = 10
+    n_simulations = 2
     for _ in range(n_simulations):
         # Keras
         t1 = time.time()
         o1 = conv2d_keras(x).numpy()
-        # print(o1)
-        avg_time[0] += (time.time() - t1)/n_simulations
+        avg_time[0] += (time.time() - t1) / n_simulations
+        W, b = conv2d_keras.get_weights()
+        # o1 = conv2d_keras(x).numpy()
+        ## print(o1)
+        # avg_time[0] += (time.time() - t1)/n_simulations
         outs[0].append(o1)
 
         # our methods
