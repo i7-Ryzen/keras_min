@@ -26,12 +26,13 @@ resnet50,
 resnet152v2,
 vgg16,
 model_dense,
-model_conv
+model_conv,
+model_pool
 """
 
 # choose the name
-n_simulations = 20
-name_of_model = "resnet50"
+n_simulations = 10
+name_of_model = "model_pool"
 
 
 model = getattr(build_models, name_of_model)()

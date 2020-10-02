@@ -16,10 +16,10 @@ def dist_plot(dictio, model_name, test_name):
 
     # Plot formatting
     plt.legend(prop={'size': 7})
-    plt.title(model_name + ' : runtime  for ' + test_name, loc='center', wrap=True)
+    plt.title(model_name + ' : density_plot runtime  for ' + test_name, loc='center', wrap=True)
     plt.xlabel('runtime (s)')
     plt.ylabel('Density')
-    plt.savefig(Path(__file__).parent.absolute() / "plots" /  (model_name + test_name))
+    plt.savefig(Path(__file__).parent.absolute() / "plots" /  ("density_plot_" + model_name +"_" + test_name))
     plt.show()
 
 
@@ -30,10 +30,10 @@ def line_plot(dictio, model_name, test_name):
 
     # Plot formatting
     plt.legend(prop={'size': 7})
-    plt.title(model_name + ' : runtime  for ' + test_name, loc='center', wrap=True)
+    plt.title(model_name + ' : line_plote runtime  for ' + test_name, loc='center', wrap=True)
     plt.xlabel('iterations')
     plt.ylabel('runtime (s)')
-    plt.savefig(Path(__file__).parent.absolute() / "plots" /  (model_name + "_" + test_name))
+    plt.savefig(Path(__file__).parent.absolute() / "plots" / ("line_plot_" + model_name +"_" + test_name))
     plt.show()
 
 
@@ -62,6 +62,10 @@ def show_results(keras_lists, kerasmin_lists, model_name):
                 ['Keras', mean(first_predictions_list_keras), mean(second_predictions_list_keras) ,mean(load_model_keras), output_keras[0]],
                 ['Kerasmin', mean(first_predictions_list_kerasmin), mean(second_predictions_list_kerasmin) ,mean(load_model_kerasmin), output_kerasmin[0]]])
     print(t.draw())
+
+    f = open(Path(__file__).parent.absolute() / "tables_results" /(model_name + ".txt"), "w")
+    f.write(t.draw())
+    f.close()
 
 
     # show plots

@@ -16,7 +16,7 @@ from tensorflow.keras.optimizers import SGD
 #####################################
 # model with convolutions
 #####################################
-def model_conv(m, kernel_size, number_filter):
+def model_conv(m=50, kernel_size=3, number_filter=32):
     classifier = Sequential()
     classifier.add(Input((200, 200, 3)))
     classifier.add(Convolution2D(number_filter, (kernel_size, kernel_size), input_shape=(200, 200, 3), activation="relu",
@@ -37,7 +37,7 @@ def model_conv(m, kernel_size, number_filter):
 #####################################
 # model with dense layers
 #####################################
-def model_dense(m, number_nodes):
+def model_dense(m=100, number_nodes=512):
     classifier = Sequential()
     # Flatten the first layer
     classifier.add(Input((200, 200, 3)))
@@ -56,13 +56,14 @@ def model_dense(m, number_nodes):
 #####################################
 # model with maxpooling layers
 #####################################
-def model_pool(m):
+def model_pool(m=6):
     classifier = Sequential()
     classifier.add(Input((200, 200, 3)))
     # We add layers with Relu as activation type, and units number of nodes.
     for _ in range(m):
         classifier.add(MaxPooling2D(pool_size=(2, 2)))
 
+    classifier.add(Flatten())
     classifier.add(Dense(activation='sigmoid', units=1))
     # We compile our model classifier
     classifier = Model(inputs=[classifier.input], outputs=[classifier.output])
